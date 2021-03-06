@@ -1,22 +1,26 @@
+use std:sync::Weak;
+
 
 pub struct SignalVar<A> {
     value: A,
-    change: Signal<A>,
+    receivers: Vec<Box<dyn Receiver<D>>>,
 }
 
-impl SignalVar<A> {
-    pub fn new(value: A) -> Muteable<A> {
-        Muteable {
-            value,
-            change: Signal::<A>::new(),
+impl<D> SignalVar<D> {
+    pub fn new(value: A) -> Self {
+        SignalVar {
+            value
+            receivers: Vec::default(),
         }
     }
-    pub fn change(&self, f: Fn(&A, &A) -> &Self {
-        self.change.push(f);
+    pub fn push<R>(&mut self, receiver: R) where R: Receiver<D> + Send + 'static{
+        self.receivers.push(Box::new(receiver));
     }
-    pub fn set(&mut self, value: A) {
-        let old = memo.replace(self.value);
-        self.value = value;
-        self.change.emit((&old, &self.value));
+}
+impl<D> Sender<D> for SignalVar<D> {
+    fn send(&self, data: &D) {
+        for receiver in &self.receivers {
+            receiver.receive(data)
+        }
     }
 }

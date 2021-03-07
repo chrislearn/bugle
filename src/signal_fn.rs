@@ -1,8 +1,10 @@
+use std::sync::{Arc, Weak};
+
 use super::{Signal, Receiver};
 
 pub struct SignalFn<F, D> {
     func: F,
-    receivers: Vec<Box<dyn Receiver<D>>>,
+    receivers: Vec<Weak<Box<dyn Receiver<D>>>>,
 }
 
 impl<F, D> SignalFn<D> where F: Fn(&D), D: Receiver {

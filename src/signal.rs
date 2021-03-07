@@ -1,7 +1,9 @@
-use super::{Sender, Receiver};
+use std::sync::{Arc, Weak};
+
+use super::{Emitter, Receiver};
 
 pub struct Signal<D> {
-    receivers: Vec<Box<dyn Receiver<D>>>,
+    receivers: Vec<Weak<Box<dyn Receiver<D>>>>,
 }
 
 impl<D> Signal<D> {
@@ -11,13 +13,15 @@ impl<D> Signal<D> {
         }
     }
     pub fn push<R>(&mut self, receiver: R) where R: Receiver<D> + Send + 'static{
-        self.receivers.push(Box::new(receiver));
+        self.receivers.push(Arc::downgrade(&Arc::new(Box::new(receiver))));
     }
 }
-impl<D> Sender<D> for Signal<D> {
-    fn send(&self, data: &D) {
+impl<D> Emitter<D> for Signal<D> {
+    fn emit(&self, data: &D) {
         for receiver in &self.receivers {
-            receiver.receive(data)
+            if let Some(receiver) = receiver.upgrade() {
+                receiver.receive(data);
+            }
         }
     }
 }

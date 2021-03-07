@@ -2,6 +2,11 @@
 name = "bugle"
 version = "0.0.1"
 authors = [ "Chrislearn Young <chrislearn@hotmail.com>" ]
+readme = "README.md"
+documentation = "https://docs.rs/bugle"
+repository = "https://github.com/chrislearn/bugle"
+categories = ["signal"]
+keywords = ["signal"]
 edition = "2018"
 
 [lib]

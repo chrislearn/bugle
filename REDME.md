@@ -1,1 +1,1 @@
-simple signal, just testing
+just testing

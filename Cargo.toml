@@ -7,6 +7,8 @@ documentation = "https://docs.rs/bugle"
 repository = "https://github.com/chrislearn/bugle"
 categories = ["signal"]
 keywords = ["signal"]
+description = "simple signal system"
+license = "MIT"
 edition = "2018"
 
 [lib]

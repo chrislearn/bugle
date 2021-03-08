@@ -1,4 +1,4 @@
-use crate::{Emitter, Receiver};
+use crate::Receiver;
 
 pub trait Mutable<'a, D>
 where

@@ -1,7 +1,7 @@
-use std::sync::{Arc, Weak, Mutex};
+use std::sync::{Arc, Mutex, Weak};
 
-use crate::{Emitter, Mutable, Receiver};
 use crate::mutable::Changed;
+use crate::{Mutable, Receiver};
 
 pub struct SignalVar<'a, D> {
     value: D,
@@ -14,7 +14,6 @@ pub struct SignalVar<'a, D> {
 //     change_receivers: Vec<Box<dyn Receiver<D>>>,
 // }
 
-
 impl<'a, D> SignalVar<'a, D> {
     pub fn new(value: D) -> Self {
         SignalVar {
@@ -23,8 +22,14 @@ impl<'a, D> SignalVar<'a, D> {
         }
     }
 }
-impl<'a, D> Mutable<'a, D> for SignalVar<'a, D> where D: Clone + 'static {
-    fn new(value: D) -> Self where D:Sized {
+impl<'a, D> Mutable<'a, D> for SignalVar<'a, D>
+where
+    D: Clone + 'static,
+{
+    fn new(value: D) -> Self
+    where
+        D: Sized,
+    {
         SignalVar {
             value,
             change_receivers: Vec::default(),
@@ -47,7 +52,10 @@ impl<'a, D> Mutable<'a, D> for SignalVar<'a, D> where D: Clone + 'static {
             }
         }
     }
-    fn on_change<R>(&mut self, receiver: R) where R: Receiver<Changed<D>> + Send + 'a{
+    fn on_change<R>(&mut self, receiver: R)
+    where
+        R: Receiver<Changed<D>> + Send + 'a,
+    {
         self.change_receivers.push(Arc::downgrade(&Arc::new(Mutex::new(Box::new(receiver)))));
     }
     // fn change_map<F, T, R>(&mut self, func: F) -> R where F: Fn(&D) -> T + Send + 'static, R: Mutable<T>{

@@ -2,12 +2,12 @@ use std::sync::Weak;
 
 use crate::{Emitter, Mutable, Receiver};
 
-pub struct SignalFn<D> {
+pub struct SignalVar<D> {
     value: D,
     change_receivers: Vec<Box<dyn Receiver<D>>>,
 }
 
-impl<D> SignalFn<D> {
+impl<D> SignalVar<D> {
     pub fn new(value: D) -> Self {
         SignalVar {
             value,

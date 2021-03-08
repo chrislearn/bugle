@@ -1,3 +1,3 @@
 pub trait Emitter<D> {
-    fn emit(&self, data: &D);
+    fn emit(&mut self, data: &D);
 }

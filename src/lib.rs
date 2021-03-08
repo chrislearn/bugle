@@ -4,10 +4,11 @@
 pub mod signal;
 pub mod receiver;
 pub mod emitter;
+pub mod mutable;
+mod signal_var;
 
-// mod signal_fn;
-
-// pub use signal_fn::SignalFn;
 pub use signal::Signal;
 pub use receiver::Receiver;
 pub use emitter::Emitter;
+pub use mutable::Mutable;
+pub use signal_var::SignalVar;

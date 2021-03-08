@@ -1,26 +1,30 @@
-use std::sync::{Arc, Weak};
+use std::sync::{Arc, Weak, Mutex};
 
 use super::{Emitter, Receiver};
 
-pub struct Signal<D> {
-    receivers: Vec<Weak<Box<dyn Receiver<D>>>>,
+pub struct Signal<'a, D> {
+    receivers: Vec<Weak<Mutex<Box<dyn Receiver<D> + 'a>>>>,
 }
 
-impl<D> Signal<D> {
+impl<'a, D> Signal<'a, D> {
     pub fn new() -> Self {
         Signal {
             receivers: Vec::default(),
         }
     }
-    pub fn push<R>(&mut self, receiver: R) where R: Receiver<D> + Send + 'static{
-        self.receivers.push(Arc::downgrade(&Arc::new(Box::new(receiver))));
+    pub fn push<R>(&mut self, receiver: R) where R: Receiver<D> + Send + 'a {
+        self.receivers.push(Arc::downgrade(&Arc::new(Mutex::new(Box::new(receiver)))));
     }
 }
-impl<D> Emitter<D> for Signal<D> {
-    fn emit(&self, data: &D) {
-        for receiver in &self.receivers {
+impl<'a, D> Emitter<D> for Signal<'a, D> {
+    fn emit(&mut self, data: &D) {
+        for receiver in &mut self.receivers {
             if let Some(receiver) = receiver.upgrade() {
-                receiver.receive(data);
+                // let mut receiver = receiver.lock().unwrap();
+                // receiver.receive(data);
+                if let Ok(mut receiver) = receiver.lock() {
+                    receiver.receive(data);
+                }
             }
         }
     }
